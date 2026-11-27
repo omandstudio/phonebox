@@ -49,6 +49,20 @@ Windows, Linux and macOS. No root, PhoneBox account or cloud service required.</
 <p align="center"><img src="docs/hero-0.6.png" width="900" alt="PhoneBox on three phones showing automation, home and planner pages"><br>
 <sub>Example layouts with demo data.</sub></p>
 
+---
+
+> [!NOTE]
+> ### ✨ Fork Enhancements (`omandstudio/phonebox`)
+> Based on [`ersinkoc/phonebox`](https://github.com/ersinkoc/phonebox), this fork adds a dedicated **`macos-companion/`** suite with:
+> - **🔊 External Speaker (Mac Audio → Smartphone)**: Stream full macOS system audio in real-time (192kbps MP3 via `ScreenCaptureKit` + `ffmpeg`) to connected Android or iPhone devices from the Media widget.
+> - **📱 iPhone / iOS Safari PWA Support**: LAN Wi-Fi bridge (`iphone_bridge.py` on port `8766`), Apple Web App standalone mode, safe-area Notch/Dynamic Island insets, WebAudio micro-haptics, and WakeLock keep-awake.
+> - **🎵 Native Apple Music (Music.app) Integration**: Live track metadata, album artwork streaming, play/pause/next/prev, and seek via JXA (`osascript -l JavaScript`).
+> - **🤖 Android USB Tunneling & App Launcher**: Automatic `adb reverse` bridge forwarding (`tcp:8765` & `tcp:8766`) and one-click macOS `.command` launchers.
+>
+> 📖 See **[`macos-companion/README.md`](macos-companion/README.md)** for full setup and usage instructions.
+
+---
+
 PhoneBox pairs a full-screen **Android app** with a small **desktop agent**. Build your panel in a browser-based
 visual editor: **137 widgets**, **30 templates**, multiple pages and a live preview. Connect several phones with
 their own layouts, or switch one phone between paired computers.
