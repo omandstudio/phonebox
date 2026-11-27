@@ -44,3 +44,4 @@ python3 iphone_bridge.py
 - **iPhone (Wi-Fi)**: Open `http://<MAC_LAN_IP>:8766/panel/index.html` in Safari → tap **Share** → **Add to Home Screen**.
 - **Android (USB / Wi-Fi)**: Open `http://127.0.0.1:8766/panel/index.html` (via USB) or `http://<MAC_LAN_IP>:8766/panel/index.html` (via Wi-Fi).
 - **External Speaker**: Tap the **Cast / Speaker** icon on the Media widget. On first use, grant **Screen Recording** permission in **System Settings → Privacy & Security → Screen Recording**.
+
