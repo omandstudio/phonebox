@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<!-- Apple iOS / iPhone Web App configuration -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="PhoneBox">
+<meta name="format-detection" content="telephone=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0a0a0c">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="/phonebox.ico">
+<title>PhoneBox</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="controls.css">
+<link rel="stylesheet" href="appearance.css">
+</head>
+<body>
+<!-- Pages and widgets are built by main.js and widgets/*.js from the layout designed in the agent's settings page. -->
+<div id="pager"></div>
+
+<nav id="dots" data-i18n-title="panel.allPages" title="All pages"></nav>
+<div id="ptitle"></div>
+
+<div id="overview" hidden>
+  <div class="ov-head"><span data-i18n="panel.allPages">All pages</span> <small data-i18n="panel.overviewHint">tap one to jump · swipe or tap edges to flip pages · long-press a page to come back here</small><span id="ovPcs"></span><button class="ov-pc" id="ovRules" hidden></button></div>
+  <div id="ovGrid"></div>
+</div>
+
+<div class="p-sheet" id="pSheet" hidden>
+  <div class="ps-head">
+    <div class="p-ico" id="psIco"></div>
+    <div class="ps-title"><b id="psTitle"></b><small id="psSub"></small></div>
+    <button class="ps-btn danger" id="psAll" data-i18n="panel.endAll">End all</button>
+    <button class="ps-btn" id="psClose" data-i18n-aria="panel.close" aria-label="Close">✕</button>
+  </div>
+  <div class="ps-list" id="psList"></div>
+</div>
+
+<div id="approval" hidden>
+  <div class="ap-card">
+    <div class="ap-head"><span class="ap-logo">✳</span><span id="apSource">Claude Code</span><span class="ap-sep">·</span><span id="apProject"></span><span class="ap-count" id="apCount"></span></div>
+    <div class="ap-tool" id="apTool"></div>
+    <div class="ap-desc" id="apDesc"></div>
+    <pre class="ap-detail" id="apDetail"></pre>
+    <div class="ap-foot">
+      <span class="ap-time" id="apTime"></span>
+      <button class="ap-btn deny" id="apDeny" data-i18n="panel.deny">Deny</button>
+      <button class="ap-btn allow" id="apAllow" data-i18n="panel.allow">Allow</button>
+      <button class="ap-btn allow" id="apSkip" hidden data-i18n="panel.gotIt">Got it</button>
+    </div>
+  </div>
+</div>
+
+<!-- calm page switching: countdown before a rule (or the idle return) changes the page, and a chip while it waits -->
+<div id="navCard" role="status">
+  <div class="nv-ring"><svg viewBox="0 0 44 44"><circle cx="22" cy="22" r="19"/><circle id="nvRing" cx="22" cy="22" r="19" pathLength="100"/></svg><b id="nvNum">3</b></div>
+  <div class="nv-text"><b id="nvName"></b><span id="nvLine"></span><small id="nvDetail"></small></div>
+  <button class="nv-btn" id="nvStay" data-i18n="panel.stay">Stay</button>
+  <button class="nv-btn go" id="nvGo" data-i18n="panel.goNow">Go now</button>
+</div>
+<div id="navChip"><button id="ncGo"><span>⏳</span><b id="ncText"></b><small id="ncWhy"></small></button><button id="ncX" data-i18n-aria="panel.dismiss" aria-label="Dismiss">✕</button></div>
+
+<div class="toast" id="toast"></div>
+<div id="offline" data-i18n="panel.pcNotConnected">PC not connected</div>
+<div id="night"><div id="nClock">--:--</div><div id="nDate"></div></div>
+
+<!-- iOS Safari Standalone / Add to Home Screen tip -->
+<div id="iosTip" hidden role="status" style="position:fixed;bottom:12px;left:12px;right:12px;z-index:95;align-items:center;gap:10px;padding:10px 14px;border-radius:12px;background:rgba(20,24,35,.94);border:1px solid rgba(56,189,248,.4);color:#e0f2fe;font:13px/1.35 system-ui,-apple-system,sans-serif;box-shadow:0 8px 24px rgba(0,0,0,.5);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)">
+  <span style="font-size:18px">📱</span>
+  <span style="flex:1"><b>iPhone Desk Mode:</b> Tap <b>Share <span style="font-size:15px">⎙</span></b> then <b>Add to Home Screen</b> for true full-screen!</span>
+  <button id="iosTipClose" type="button" aria-label="Close" style="background:transparent;border:1px solid rgba(224,242,254,.3);color:inherit;border-radius:6px;padding:3px 8px;font:inherit;cursor:pointer">✕</button>
+</div>
+<script>
+(function() {
+  try {
+    var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    var isStandalone = window.navigator.standalone === true || window.matchMedia('(display-mode: standalone)').matches;
+    if (isIOS && !isStandalone) {
+      if (sessionStorage.getItem('pb-ios-tip-dismissed') !== '1') {
+        var tip = document.getElementById('iosTip');
+        var closeBtn = document.getElementById('iosTipClose');
+        if (tip) {
+          tip.hidden = false;
+          tip.style.display = 'flex';
+          if (closeBtn) {
+            closeBtn.onclick = function(e) {
+              e.stopPropagation();
+              tip.style.display = 'none';
+              tip.hidden = true;
+              try { sessionStorage.setItem('pb-ios-tip-dismissed', '1'); } catch(_) {}
+            };
+          }
+        }
+      }
+    }
+  } catch(_) {}
+})();
+</script>
+
+<div id="webviewWarn" hidden role="status" style="position:fixed;top:8px;left:8px;right:8px;z-index:90;align-items:center;gap:10px;padding:8px 12px;border-radius:10px;background:rgba(24,20,12,.94);border:1px solid rgba(245,158,11,.45);color:#fde68a;font:12.5px/1.35 system-ui,sans-serif">
+  <span style="flex:1" data-i18n="panel.webviewWarn">Outdated WebView — update browser so widgets scale properly.</span>
+  <button id="webviewWarnClose" type="button" data-i18n-aria="panel.dismissWebview" aria-label="Dismiss WebView notice" style="background:transparent;border:1px solid rgba(253,230,138,.35);color:inherit;border-radius:6px;padding:3px 8px;font:inherit;cursor:pointer">✕</button>
+</div>
+<script>
+(function () {
+  try {
+    if (/[?&]preview(?:[=&]|$)/.test(location.search)) return;
+    if (window.CSS && typeof CSS.supports === 'function' && CSS.supports('font-size', '1cqw')) return;
+    try { if (sessionStorage.getItem('pb-wv-dismissed') === '1') return; } catch (_) {}
+    var el = document.getElementById('webviewWarn'), btn = document.getElementById('webviewWarnClose');
+    if (!el) return;
+    el.hidden = false; el.style.display = 'flex';
+    if (btn) btn.onclick = function (e) {
+      e.stopPropagation();
+      el.style.display = ''; el.hidden = true;
+      try { sessionStorage.setItem('pb-wv-dismissed', '1'); } catch (_) {}
+    };
+  } catch (_) {}
+})();
+</script>
+<div id="jsfail" hidden role="alert" style="position:fixed;left:8px;right:8px;bottom:8px;z-index:200;padding:10px 12px;border-radius:10px;background:rgba(60,10,10,.96);border:1px solid rgba(248,113,113,.6);color:#fecaca;font:12px/1.4 monospace;white-space:pre-wrap;word-break:break-word;max-height:60vh;overflow:auto"></div>
+<script>
+// Anything that throws while the panel boots leaves a black screen with no clue. Show it instead.
+(function () {
+  var box = document.getElementById('jsfail'), lines = [];
+  window.__pbFail = function (text) {
+    if (lines.indexOf(text) >= 0) return;
+    lines.push(text);
+    if (!box) return;
+    box.hidden = false; box.style.display = 'block';
+    box.textContent = lines.join('\n');
+  };
+  window.__pbClear = function (prefix) {
+    var keep = [];
+    for (var i = 0; i < lines.length; i++) if (lines[i].indexOf(prefix) !== 0) keep.push(lines[i]);
+    if (keep.length === lines.length) return;
+    lines = keep;
+    if (!box) return;
+    box.textContent = lines.join('\n');
+    if (!lines.length) { box.hidden = true; box.style.display = 'none'; }
+  };
+  window.addEventListener('error', function (e) {
+    var t = e && e.target;
+    if (t && t !== window && (t.src || t.href)) {
+      var src = String(t.src || t.href);
+      if (src.indexOf('data:') === 0) return;
+      if (t.tagName === 'SCRIPT' || t.tagName === 'LINK') {
+        window.__pbFail('LOAD FAIL ' + src);
+      }
+      return;
+    }
+    if (e && e.message) window.__pbFail('ERR ' + e.message + (e.filename ? '  ' + String(e.filename).split('/').pop() + ':' + e.lineno : ''));
+  }, true);
+  window.addEventListener('unhandledrejection', function (e) {
+    var r = e && e.reason;
+    window.__pbFail('REJECT ' + ((r && (r.stack || r.message)) || String(r)));
+  });
+  setTimeout(function () {
+    if (window.__pbUp) return;
+    window.__pbFail('the panel did not finish booting in 8s\nUA: ' + navigator.userAgent);
+    var watch = setInterval(function () {
+      if (!window.__pbUp) return;
+      clearInterval(watch);
+      window.__pbClear('the panel did not finish booting');
+    }, 500);
+  }, 8000);
+})();
+</script>
+<script src="compat.js"></script>
+<script src="i18n.js"></script>
+<script type="module" src="main.js"></script>
+</body>
+</html>

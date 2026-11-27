@@ -56,3 +56,8 @@ tools/ui-tests/test-results/
 
 *.log
 *.txt
+# macOS companion binaries & APKs
+mac_audio_capture
+*.apk
+platform-tools/
+PhoneBoxAgent

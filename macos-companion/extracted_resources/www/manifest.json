@@ -1,0 +1,30 @@
+{
+  "name": "PhoneBox Desk Panel",
+  "short_name": "PhoneBox",
+  "description": "Desk panel and stream deck for your computer",
+  "start_url": "/panel/index.html",
+  "scope": "/panel/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0a0a0c",
+  "theme_color": "#0a0a0c",
+  "icons": [
+    {
+      "src": "/phonebox.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "/panel/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/panel/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
